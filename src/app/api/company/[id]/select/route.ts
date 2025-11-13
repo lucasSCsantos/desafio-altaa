@@ -1,3 +1,3 @@
-export async function POST() {
-  console.log('Select a company');
-}
+import { selectCompanyController } from '@/modules/company/company.controller';
+
+export const POST = selectCompanyController;

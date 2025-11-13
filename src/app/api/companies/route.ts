@@ -1,3 +1,3 @@
-export async function GET() {
-  console.log('List of companies');
-}
+import { listCompanies } from '@/modules/company/company.service';
+
+export const GET = listCompanies;

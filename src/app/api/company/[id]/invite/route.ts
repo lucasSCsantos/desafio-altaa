@@ -1,3 +1,3 @@
-export async function POST() {
-  console.log('Cria um convite para a empresa');
-}
+import { createInviteController } from '@/modules/invite/invite.controller';
+
+export const POST = createInviteController;
