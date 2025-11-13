@@ -1,3 +1,3 @@
-export async function POST() {
-  console.log('Loga o usuário');
-}
+import { login } from '@/modules/user/user.controller';
+
+export const POST = login;
