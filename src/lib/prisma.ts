@@ -1,6 +1,6 @@
 import { PrismaClient } from '@/generated/prisma/client';
 
-const globalPrisma = global as unknown as { prisma: PrismaClient | undefined };
+const globalPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
 
 const prisma = globalPrisma.prisma ?? new PrismaClient();
 
