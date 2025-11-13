@@ -17,3 +17,10 @@ export async function findUserById(userId: string) {
 export async function findUserByEmail(email: string) {
   return prisma.user.findUnique({ where: { email: email } });
 }
+
+export async function setUserActiveCompany(userId: string, companyId: string) {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { activeCompanyId: companyId },
+  });
+}

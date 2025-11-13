@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma';
 import { findUserByEmail } from './user.repository';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { signJWT } from '@/lib/auth';
 
 interface CreateUserParams {
   email: string;
@@ -35,11 +36,8 @@ export async function createUser({ email, name, password }: CreateUserParams) {
     throw new Error('Error creating user');
   }
 
-  const jwtKey = process.env.JWT_KEY;
-
-  const token = jwt.sign({}, jwtKey, {
-    subject: user.id,
-    expiresIn: '1d',
+  const token = signJWT({
+    userId: user.id,
   });
 
   return token;
@@ -58,11 +56,8 @@ export async function loginUser({ email, password }: LoginUserParams) {
     throw new Error('Invalid password');
   }
 
-  const jwtKey = process.env.JWT_KEY;
-
-  const token = jwt.sign({}, jwtKey, {
-    subject: user.id,
-    expiresIn: '1d',
+  const token = signJWT({
+    userId: user.id,
   });
 
   return token;
