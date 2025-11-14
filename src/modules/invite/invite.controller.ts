@@ -1,11 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from '@/lib/auth';
 import { acceptInvite, createInvite } from './invite.service';
 import { acceptInviteSchema, createInviteSchema } from './invite.schema';
+import { cookies } from 'next/headers';
 
-export async function createInviteController(req: Request) {
+export async function createInviteController(req: NextRequest) {
   try {
-    const token = req.headers.get('cookie')?.split('session=')[1];
+    const token = (await cookies()).get('session')?.value;
     const session = verifyJWT(token);
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -25,22 +26,23 @@ export async function createInviteController(req: Request) {
   }
 }
 
-export async function acceptInviteController(req: Request) {
+export async function acceptInviteController(req: NextRequest) {
   try {
-    const token = req.headers.get('cookie')?.split('session=')[1];
+    const token = (await cookies()).get('session')?.value;
     const session = verifyJWT(token);
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const body = await req.json();
+    const inviteToken = req.nextUrl.searchParams.get('token');
 
-    const parsed = acceptInviteSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error }, { status: 400 });
+    if (inviteToken == null) {
+      return NextResponse.json({ error: 'Token is required' }, { status: 400 });
     }
 
-    const companies = await acceptInvite(parsed.data, session);
-    return NextResponse.json(companies);
+    const accepted = await acceptInvite(inviteToken, session);
+
+    return NextResponse.json(accepted);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch companies' }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ error: 'Failed to accept invite' }, { status: 500 });
   }
 }

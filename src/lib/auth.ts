@@ -16,12 +16,11 @@ export function verifyJWT(token?: string): SessionPayload | null {
   try {
     if (!token) return null;
 
-    // Throws if invalid or expired
     const decoded = jwt.verify(token, JWT_KEY) as SessionPayload;
 
     return decoded;
   } catch (err) {
     console.error('JWT verification failed:', err);
-    return null;
+    throw new Error('Invalid or expired token: ' + (err as Error).message);
   }
 }

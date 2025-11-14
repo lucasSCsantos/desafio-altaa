@@ -34,6 +34,14 @@ export async function createCompany(
     throw new Error('Error creating user');
   }
 
+  await prisma.membership.create({
+    data: {
+      userId,
+      companyId: company.id,
+      role: 'OWNER',
+    },
+  });
+
   return company;
 }
 
@@ -43,13 +51,16 @@ export async function listCompanies({ userId }: ListCompaniesParams, page: numbe
   return companies;
 }
 
-export async function selectCompany(
-  { userId }: SessionPayload,
-  { companyId }: SelectCompanyParams,
-) {
-  const company = await setUserActiveCompany(userId, companyId);
+export async function selectCompany({ userId }: SessionPayload, companyId: string) {
+  const company = await findCompanyById(companyId);
 
   if (!company) {
+    throw new Error('Company not found');
+  }
+
+  const user = await setUserActiveCompany(userId, companyId);
+
+  if (!user) {
     throw new Error('Error selecting company');
   }
 

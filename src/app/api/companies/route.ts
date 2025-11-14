@@ -1,3 +1,3 @@
-import { listCompanies } from '@/modules/company/company.service';
+import { listCompaniesController } from '@/modules/company/company.controller';
 
-export const GET = listCompanies;
+export const GET = listCompaniesController;

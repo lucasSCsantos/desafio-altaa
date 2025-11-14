@@ -1,3 +1,3 @@
-import { signup } from '@/modules/user/user.controller';
+import { signupController } from '@/modules/user/user.controller';
 
-export const POST = signup;
+export const POST = signupController;
