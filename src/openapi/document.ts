@@ -1,7 +1,9 @@
+import { OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
 import { registry } from './registry';
-import A from '@asteasolutions/zod-to-openapi';
 
-export const openApiDocument = A.getOpenApiMetadata(registry.definitions, {
+const generator = new OpenApiGeneratorV3(registry.definitions);
+
+export const openApiDocument = generator.generateDocument({
   openapi: '3.0.0',
   info: {
     title: 'My SaaS API',
