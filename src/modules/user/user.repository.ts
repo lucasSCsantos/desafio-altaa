@@ -14,6 +14,22 @@ export async function findUserById(userId: string) {
   return prisma.user.findUnique({ where: { id: userId } });
 }
 
+export async function findUserByIdAndCompany(userId: string, companyId: string) {
+  return prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      memberships: {
+        where: { companyId },
+        select: {
+          role: true,
+        },
+      },
+    },
+  });
+}
+
 export async function findUserByEmail(email: string) {
   return prisma.user.findUnique({ where: { email: email } });
 }

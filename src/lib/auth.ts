@@ -4,7 +4,7 @@ const JWT_KEY = process.env.JWT_KEY || 'default_jwt_key';
 
 export interface SessionPayload {
   userId: string;
-  companyId?: string;
+  activeCompanyId?: string;
   email?: string;
 }
 

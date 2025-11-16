@@ -1,19 +1,30 @@
 import { NextResponse } from 'next/server';
-import { createUser, loginUser } from './user.service';
-import { createUserSchema, loginUserSchema } from './user.schema';
-import { ZodRealError } from 'zod';
+import { createUser, getUser, loginUser } from './user.service';
+import { CreateUserBodySchema, LoginUserBodySchema } from './user.schema';
+import { cookies } from 'next/headers';
+import { verifyJWT } from '@/lib/auth';
+import { createErrorResponse } from '@/lib/error-handler';
 
 export async function signupController(req: Request) {
   try {
     const body = await req.json();
 
-    const parsed = createUserSchema.safeParse(body);
+    const parsed = CreateUserBodySchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
     const token = await createUser(parsed.data);
 
-    return NextResponse.json(token);
+    const response = NextResponse.json({ success: true });
+
+    response.cookies.set('session', token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    return response;
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
@@ -24,15 +35,50 @@ export async function loginController(req: Request) {
   try {
     const body = await req.json();
 
-    const parsed = loginUserSchema.safeParse(body);
+    const parsed = LoginUserBodySchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
 
     const token = await loginUser(parsed.data);
 
-    return NextResponse.json(token);
+    const res = NextResponse.json({ success: true });
+
+    res.cookies.set('session', token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    return res;
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
+    return createErrorResponse(error);
+  }
+}
+
+export async function logoutController(req: Request) {
+  try {
+    const res = NextResponse.json({ success: true });
+
+    res.cookies.set('session', '', { path: '/', expires: new Date(0) });
+
+    return res;
+  } catch (error) {
+    return createErrorResponse(error);
+  }
+}
+
+export async function getActualUserController(req: Request) {
+  try {
+    const token = (await cookies()).get('session')?.value;
+    const session = verifyJWT(token);
+
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const user = await getUser(session);
+    return NextResponse.json(user);
+  } catch (error) {
+    return createErrorResponse(error);
   }
 }

@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from '@/lib/auth';
-import { createCompany, getCompany, listCompanies, selectCompany } from './company.service';
-import { createCompanySchema } from './company.schema';
+import {
+  createCompany,
+  deleteCompany,
+  getCompany,
+  listCompanies,
+  selectCompany,
+} from './company.service';
+import { CreateCompanyBodySchema } from './company.schema';
 import { cookies } from 'next/headers';
+import { createErrorResponse } from '@/lib/error-handler';
 
 export async function createCompanyController(req: NextRequest) {
   try {
@@ -12,7 +19,7 @@ export async function createCompanyController(req: NextRequest) {
 
     const body = await req.json();
 
-    const parsed = createCompanySchema.safeParse(body);
+    const parsed = CreateCompanyBodySchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
@@ -20,8 +27,7 @@ export async function createCompanyController(req: NextRequest) {
     const company = await createCompany(parsed.data, session);
     return NextResponse.json(company);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to create company' }, { status: 500 });
+    return createErrorResponse(error);
   }
 }
 
@@ -36,7 +42,7 @@ export async function listCompaniesController(req: NextRequest) {
 
     return NextResponse.json(companies);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch companies' }, { status: 500 });
+    return createErrorResponse(error);
   }
 }
 
@@ -52,9 +58,19 @@ export async function selectCompanyController(
     const { id: companyId } = await params;
 
     const newToken = await selectCompany(session, companyId);
-    return NextResponse.json(newToken);
+
+    const res = NextResponse.json({ success: true });
+
+    res.cookies.set('session', newToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    return res;
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to select company' }, { status: 500 });
+    return createErrorResponse(error);
   }
 }
 
@@ -67,6 +83,20 @@ export async function getCompanyController(req: NextRequest) {
     const company = await getCompany(session);
     return NextResponse.json(company);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch companies' }, { status: 500 });
+    return createErrorResponse(error);
+  }
+}
+
+export async function deleteCompanyController(req: NextRequest) {
+  try {
+    const token = (await cookies()).get('session')?.value;
+    const session = verifyJWT(token);
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    await deleteCompany(session);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return createErrorResponse(error);
   }
 }
