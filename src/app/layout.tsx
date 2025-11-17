@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
-// import { SpeedInsights } from '@vercel/speed-insights/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const geist = Geist({ subsets: ['latin'] });
 
@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geist.className} font-sans antialiased`}>
         {children}
-        {/* <SpeedInsights /> */}
+        <SpeedInsights />
         <Toaster richColors />
       </body>
     </html>
