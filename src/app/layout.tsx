@@ -30,8 +30,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geist.className} font-sans antialiased`}>
         {children}
-        <Toaster richColors />
         <SpeedInsights />
+        <Toaster richColors />
       </body>
     </html>
   );
