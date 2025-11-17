@@ -28,8 +28,6 @@ jobs:
     env:
       NODE_ENV: test
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb?schema=public
-      
-      # Seus secrets reais
       JWT_KEY: ${{ secrets.JWT_KEY }}
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       RESEND_EMAIL: ${{ secrets.RESEND_EMAIL }}
@@ -52,25 +50,13 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Wait for Postgres
-        run: |
-          until pg_isready -h localhost -p 5432; do
-            echo "Waiting for Postgres..."
-            sleep 1
-          done
-
-      - name: Prisma Migrate
-        run: npx prisma migrate deploy
-
-      - name: Seed database
-        run: npx prisma db seed
-
       - name: Lint
         run: npm run lint
-        
+
       - name: Cypress E2E
         uses: cypress-io/github-action@v6
         with:
-          # build: npm run build
-          start: npm run dev
+          # O comando abaixo garante que migrations e seed rodem antes do server
+          start: npx prisma migrate deploy && npx prisma db seed && npm run dev
           wait-on: http://localhost:3000
+          wait-on-timeout: 60
