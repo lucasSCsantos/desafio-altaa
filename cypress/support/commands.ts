@@ -32,11 +32,3 @@ Cypress.Commands.add('login', () => {
     password: 'testeteste',
   });
 });
-
-export {};
-
-declare global {
-  interface Cypress {
-    login(): Cypress.Chainable;
-  }
-}
