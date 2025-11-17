@@ -15,7 +15,7 @@ describe('Signup', () => {
     cy.visit('/signup');
 
     cy.get('input[id="name"]').type('Lu');
-    cy.get('input[id="email"]').type('invalid-email@email.com');
+    cy.get('input[id="email"]').type('invalid-email');
     cy.get('input[id="password"]').type('123');
 
     cy.get('button[type="submit"]').click();
