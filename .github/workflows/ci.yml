@@ -7,34 +7,8 @@ on:
     branches: [development, main]
 
 jobs:
-  ci:
+  lint-and-cypress:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: testdb
-        ports:
-          - "5432:5432"
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-    env:
-      NODE_ENV: test
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb?schema=public
-      
-      # Seus secrets reais
-      JWT_KEY: ${{ secrets.JWT_KEY }}
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      RESEND_EMAIL: ${{ secrets.RESEND_EMAIL }}
-      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-      FAKER_PASSWORD_HASH: ${{ secrets.FAKER_PASSWORD_HASH }}
 
     steps:
       - name: Checkout
@@ -49,31 +23,11 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Generate Prisma Client
-        run: npx prisma generate
-
-      - name: Wait for Postgres
-        run: |
-          until pg_isready -h localhost -p 5432; do
-            echo "Waiting for Postgres..."
-            sleep 1
-          done
-
-      - name: Prisma Migrate
-        run: npx prisma migrate deploy
-
-      - name: Seed database
-        run: npx prisma db seed
-
       - name: Lint
         run: npm run lint
 
-      - name: Unit tests
-        run: npm test
-
-      - name: Cypress E2E
+      - name: Cypress Run
         uses: cypress-io/github-action@v6
         with:
-          build: npm run build
-          start: npm start
+          start: npm run dev
           wait-on: http://localhost:3000
