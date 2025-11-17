@@ -10,6 +10,7 @@ declare global {
       DATABASE_URL: string;
       JWT_KEY: string;
       SENDER_EMAIL: string;
+      FAKER_PASSWORD_HASH: string;
     }
   }
 }

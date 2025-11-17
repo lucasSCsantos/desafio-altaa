@@ -27,6 +27,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+      FAKER_PASSWORD_HASH: ${{ secrets.FAKER_PASSWORD_HASH }}
       NEXT_TELEMETRY_DISABLED: 1
       CI: true
 
