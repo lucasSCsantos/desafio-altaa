@@ -11,8 +11,8 @@ async function main() {
   for (let i = 0; i < USERS_COUNT; i++) {
     const user = await prisma.user.create({
       data: {
-        name: i === 0 ? 'email@teste.com' : faker.person.fullName(),
-        email: faker.internet.email().toLowerCase(),
+        name: faker.person.fullName(),
+        email: i === 0 ? 'email@teste.com' : faker.internet.email().toLowerCase(),
         password: '$2b$10$1kdEj3jCpzmbj2rITfAQE.z7tL5kL.uQFlQJU1FrdVeCpGxiIqIBW',
       },
     });
