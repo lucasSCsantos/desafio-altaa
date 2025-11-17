@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # 🔥 Usa seu .env, mas substitui DATABASE_URL só no CI
+      - name: Create env file
+        run: |
+          cp .env.example .env || cp .env .env
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/app" >> .env
+
+      - name: Prisma generate
+        run: npx prisma generate
+
+      - name: Run migrations
+        run: npx prisma migrate deploy
+
+      # 🔥 SEED AUTOMÁTICO
+      - name: Run Prisma seed
+        run: npx prisma db seed
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
+
+      # Lint
+      - name: Run lint
+        run: npm run lint --if-present
+
+      # Build
+      - name: Build project
+        run: npm run build
+
+      # Testes unitários / integração
+      - name: Run unit tests
+        run: npm test --if-present
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
+
+      # --- Cypress (opcional) ---
+      - name: Install Cypress
+        run: npx cypress install
+      
+      - name: Start Next.js server
+        run: npm run start &
+      
+      - name: Run E2E tests
+        run: npx cypress run
