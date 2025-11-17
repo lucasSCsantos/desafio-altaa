@@ -11,9 +11,16 @@ import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { CreateUserBodySchema } from '@/schemas/user.schema';
 import { api } from '@/lib/api';
+import { use } from 'react';
 
-export default function SignUpPage() {
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export default function SignUpPage(props: { searchParams: SearchParams }) {
   const router = useRouter();
+
+  const searchParams = use(props.searchParams);
+  const { token } = searchParams;
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,7 +50,11 @@ export default function SignUpPage() {
         body: JSON.stringify(payload),
       });
 
-      router.push('/');
+      if (token) {
+        router.push(`/accept-invite?token=${token}`);
+      } else {
+        router.push('/');
+      }
     } catch (error: any) {
       toast.error('Erro', {
         description: error.message as string,
@@ -134,7 +145,10 @@ export default function SignUpPage() {
           {/* Sign In Link */}
           <p className="text-center text-sm text-muted-foreground">
             Já tem uma conta?{' '}
-            <Link href="/login" className="font-semibold text-primary hover:underline">
+            <Link
+              href={`/login${token ? `?token=${token}` : ''}`}
+              className="font-semibold text-primary hover:underline"
+            >
               Fazer login
             </Link>
           </p>

@@ -13,6 +13,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (!token && pathname === '/accept-invite') {
+    const tokenParam = request.nextUrl.searchParams.get('token') || '';
+    const redirectUrl = new URL(`/login?token=${tokenParam}`, request.nextUrl);
+    redirectUrl.searchParams.set('error', 'session_required');
+    return NextResponse.redirect(redirectUrl);
+  }
+
   if (!token && publicRoute) {
     return NextResponse.next();
   }

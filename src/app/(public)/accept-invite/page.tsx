@@ -1,7 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -19,8 +17,8 @@ export default function AcceptInvitePage(props: { searchParams: SearchParams }) 
 
   useEffect(() => {
     if (!token) {
-      toast.error('Token não encontrado.');
-      router.push('/login');
+      toast.error('Token não encontrado. Redirecionando para cadastro.');
+      router.push(`/signup?token=${token || ''}`);
       return;
     }
 

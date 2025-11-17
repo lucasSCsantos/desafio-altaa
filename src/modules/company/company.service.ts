@@ -53,7 +53,10 @@ export async function listCompanies({ userId }: ListCompaniesParams, page: numbe
 
   return {
     total,
-    companies,
+    companies: companies.map((company) => ({
+      ...company,
+      membersCount: company._count.memberships,
+    })),
     totalPages: Math.ceil(total / PAGE_SIZE),
   };
 }

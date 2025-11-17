@@ -44,11 +44,9 @@ export async function createInvite(
         id: inviteAlreadyExists.id,
       },
       data: {
-        expiresAt: new Date(Date.now()), // Expires in 1 hour
+        expiresAt: new Date(Date.now()),
       },
     });
-
-    inviteAlreadyExists.expiresAt = new Date(Date.now());
   }
 
   const invite = await prisma.invite.create({
@@ -79,12 +77,46 @@ export async function createInvite(
   const inviteUrl = `http://${process.env.FRONTEND_URL || 'localhost:3000'}/accept-invite?token=${invite.token}`;
 
   const data = await transporter.sendMail({
-    from: process.env.RESEND_EMAIL,
+    from: process.env.SENDER_EMAIL,
     to: email,
     subject: 'You are invited to join our company',
-    html: `<p>You have been invited to join our company. Click the link below to accept the invite:
-              <a href="${inviteUrl}">Accept Invite</a>
-      </p>`,
+    html: `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Invitation Email</title>
+      </head>
+      <body style="margin:0;padding:0;background-color:#f9fafb;font-family:Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+          <tr>
+            <td align="center" style="padding: 40px 10px;">
+              <!-- Container -->
+              <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="background: linear-gradient(135deg, #3b82f6, #06b6d4); border-radius: 16px; overflow: hidden;">
+                <tr>
+                  <td align="center" style="padding: 40px;">
+                    <!-- Header -->
+                    <h1 style="font-size: 36px; color: #ffffff; margin: 0;">Você foi convidado!</h1>
+                    <p style="font-size: 18px; color: #e0e7ff; margin: 16px 0 32px;">Junte-se à nossa empresa clicando no botão abaixo.</p>
+
+                    <!-- Action Button -->
+                    <a href="${inviteUrl}" style="display:inline-block;background-color:#ffffff;color:#3b82f6;font-weight:bold;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:16px;">
+                      Aceitar Convite
+                    </a>
+
+                    <!-- Footer Note -->
+                    <p style="font-size:14px;color:#e0e7ff;margin-top:24px;">
+                      Se você não solicitou este convite, ignore este e-mail.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+              <!-- End Container -->
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>`,
   });
 
   const url = nodemailer.getTestMessageUrl(data);
@@ -115,7 +147,7 @@ export async function acceptInvite(token: string, { userId }: SessionPayload) {
 
   const user = await findUserById(userId);
 
-  if (invite.email === user?.email) {
+  if (invite.email !== user?.email) {
     throw new ApiError(
       409,
       'INVITE_EMAIL_MISMATCH',
