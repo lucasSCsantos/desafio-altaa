@@ -111,9 +111,13 @@ npx prisma db seed
 npm run dev
 ```
 
-Aplicação disponível em:
+Aplicação local disponível em:
 
-👉 `http://localhost:3000`
+👉 `https://localhost:3000/`
+
+Aplicação em produção disponível em:
+
+👉 `https://desafio-altaa-one.vercel.app/`
 
 ---
 
