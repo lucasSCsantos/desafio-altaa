@@ -13,7 +13,7 @@ async function main() {
       data: {
         name: i === 0 ? 'email@teste.com' : faker.person.fullName(),
         email: faker.internet.email().toLowerCase(),
-        password: process.env.FAKER_PASSWORD_HASH,
+        password: '$2b$10$1kdEj3jCpzmbj2rITfAQE.z7tL5kL.uQFlQJU1FrdVeCpGxiIqIBW',
       },
     });
 
