@@ -57,6 +57,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           # O comando abaixo garante que migrations e seed rodem antes do server
-          start: npx prisma migrate deploy && npx prisma db seed && npm run build && npm start
+          build: npm run build
+          start: npx prisma migrate deploy && npx prisma db seed && npm start
           wait-on: http://localhost:3000
           wait-on-timeout: 60
