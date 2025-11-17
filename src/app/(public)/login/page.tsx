@@ -69,7 +69,7 @@ export default function LoginPage() {
           <p className="text-center text-muted-foreground mb-8">Faça login na sua conta Altaa.ai</p>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
