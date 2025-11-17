@@ -24,31 +24,31 @@ export default function SignUpPage() {
 
     setIsLoading(true);
 
-    const result = CreateUserBodySchema.safeParse({ name, email, password });
-
-    if (!result.success) {
-      const message = result.error.issues[0].message;
-
-      toast.error('Erro', {
-        description: message,
-      });
-
-      return;
-    }
-
-    const payload = result.data;
     try {
+      const result = CreateUserBodySchema.safeParse({ name, email, password });
+
+      if (!result.success) {
+        const message = result.error.issues[0].message;
+
+        toast.error('Erro', {
+          description: message,
+        });
+
+        return;
+      }
+
+      const payload = result.data;
       await api('/api/auth/signup', {
         method: 'POST',
         body: JSON.stringify(payload),
       });
+
+      router.push('/');
     } catch (error: any) {
       toast.error('Erro', {
         description: error.message as string,
       });
-      setIsLoading(false);
     } finally {
-      router.push('/');
       setIsLoading(false);
     }
   };

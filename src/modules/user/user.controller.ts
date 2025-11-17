@@ -26,8 +26,7 @@ export async function signupController(req: Request) {
 
     return response;
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
+    return createErrorResponse(error);
   }
 }
 

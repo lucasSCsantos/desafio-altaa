@@ -11,7 +11,7 @@ describe('Signup', () => {
     cy.url().should('equal', 'http://localhost:3000/');
   });
 
-  it('should not create a new user when data is invalide', () => {
+  it('should not create a new user when data is invalid', () => {
     cy.visit('/signup');
 
     cy.get('input[id="name"]').type('Lu');

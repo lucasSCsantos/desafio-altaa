@@ -23,21 +23,21 @@ export default function LoginPage() {
 
     setIsLoading(true);
 
-    const result = LoginUserBodySchema.safeParse({ email, password });
-
-    if (!result.success) {
-      const message = result.error.issues[0].message;
-
-      toast.error('Erro', {
-        description: message,
-      });
-
-      return;
-    }
-
-    const payload = result.data;
-
     try {
+      const result = LoginUserBodySchema.safeParse({ email, password });
+
+      if (!result.success) {
+        const message = result.error.issues[0].message;
+
+        toast.error('Erro', {
+          description: message,
+        });
+
+        return;
+      }
+
+      const payload = result.data;
+
       await api('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify(payload),
