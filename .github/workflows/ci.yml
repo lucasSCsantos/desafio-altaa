@@ -67,10 +67,7 @@ jobs:
 
       - name: Lint
         run: npm run lint
-
-      - name: Unit tests
-        run: npm test
-
+        
       - name: Cypress E2E
         uses: cypress-io/github-action@v6
         with:

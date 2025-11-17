@@ -17,5 +17,5 @@ export default function DocsPage() {
     ssr: false,
   });
 
-  return <SwaggerUI url="/swagger.json" />;
+  return <SwaggerUI url="swagger.json" />;
 }
