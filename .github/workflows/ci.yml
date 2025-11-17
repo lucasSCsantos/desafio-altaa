@@ -14,21 +14,27 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
         ports:
-          # expõe a porta padrão 5432 para prisma, ignorando o DB_PORT do .env
           - "5432:5432"
         options: >-
-          --health-cmd="pg_isready -U ${{ secrets.DB_USER }}"
+          --health-cmd="pg_isready -U postgres"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
 
     env:
-      DATABASE_URL: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:5432/${{ secrets.DB_NAME }}?schema=public
       NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb?schema=public
+      
+      # Seus secrets reais
+      JWT_KEY: ${{ secrets.JWT_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_EMAIL: ${{ secrets.RESEND_EMAIL }}
+      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+      FAKER_PASSWORD_HASH: ${{ secrets.FAKER_PASSWORD_HASH }}
 
     steps:
       - name: Checkout
@@ -38,7 +44,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
+          cache: npm
 
       - name: Install Dependencies
         run: npm ci
@@ -46,21 +52,28 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Run Migrations
+      - name: Wait for Postgres
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for Postgres..."
+            sleep 1
+          done
+
+      - name: Prisma Migrate
         run: npx prisma migrate deploy
 
-      - name: Run Seed
+      - name: Seed database
         run: npx prisma db seed
 
       - name: Lint
         run: npm run lint
 
-      - name: Run Unit Tests
-        run: npm run test
+      - name: Unit tests
+        run: npm test
 
-      - name: Cypress Run
+      - name: Cypress E2E
         uses: cypress-io/github-action@v6
         with:
           build: npm run build
-          start: npm run start
-          wait-on: "http://localhost:3000"
+          start: npm start
+          wait-on: http://localhost:3000
