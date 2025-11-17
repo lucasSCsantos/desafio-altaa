@@ -47,7 +47,7 @@ export async function listCompaniesController(req: NextRequest) {
 }
 
 export async function selectCompanyController(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
@@ -74,7 +74,7 @@ export async function selectCompanyController(
   }
 }
 
-export async function getCompanyController(req: NextRequest) {
+export async function getCompanyController() {
   try {
     const token = (await cookies()).get('session')?.value;
     const session = verifyJWT(token);
@@ -87,7 +87,7 @@ export async function getCompanyController(req: NextRequest) {
   }
 }
 
-export async function deleteCompanyController(req: NextRequest) {
+export async function deleteCompanyController() {
   try {
     const token = (await cookies()).get('session')?.value;
     const session = verifyJWT(token);

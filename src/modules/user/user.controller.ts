@@ -56,7 +56,7 @@ export async function loginController(req: Request) {
   }
 }
 
-export async function logoutController(req: Request) {
+export async function logoutController() {
   try {
     const res = NextResponse.json({ success: true });
 
@@ -68,7 +68,7 @@ export async function logoutController(req: Request) {
   }
 }
 
-export async function getActualUserController(req: Request) {
+export async function getActualUserController() {
   try {
     const token = (await cookies()).get('session')?.value;
     const session = verifyJWT(token);
