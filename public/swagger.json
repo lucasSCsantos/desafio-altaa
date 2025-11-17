@@ -1,0 +1,376 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Alta API",
+    "version": "1.0.0",
+    "description": "API documentation for the Alta SaaS multitenant backend"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/api/auth/signup": {
+      "post": {
+        "summary": "Signup",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/accept-invite": {
+      "post": {
+        "summary": "Accept Invite",
+        "tags": ["Invite"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invite accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "summary": "Logout",
+        "description": "Clears the httpOnly session cookie.",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully"
+          }
+        }
+      }
+    },
+
+    "/api/auth/me": {
+      "get": {
+        "summary": "Get authenticated user",
+        "description": "Returns the user based on the httpOnly session cookie.",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Authenticated user returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "email": { "type": "string" },
+                    "role": { "type": "string" },
+                    "companies": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "companyId": { "type": "string" },
+                          "role": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Not authenticated" }
+        }
+      }
+    },
+    "/api/company": {
+      "post": {
+        "summary": "Create Company",
+        "tags": ["Company"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCompanyBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Company created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Company" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete company",
+        "description": "Deletes the authenticated user's active company.",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Company deleted successfully"
+          },
+          "403": {
+            "description": "Forbidden — user does not have permission"
+          },
+          "404": {
+            "description": "Company not found"
+          }
+        }
+      }
+    },
+    "/api/company/{companyId}": {
+      "get": {
+        "summary": "Find Company",
+        "tags": ["Company"],
+        "parameters": [
+          {
+            "name": "companyId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Company found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Company" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/companies": {
+      "get": {
+        "summary": "List Companies",
+        "tags": ["Company"],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "number", "default": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Companies list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CompanyListResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/company/{companyId}/select": {
+      "post": {
+        "summary": "Select Company",
+        "tags": ["Company"],
+        "parameters": [
+          {
+            "name": "companyId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Company selected"
+          }
+        }
+      }
+    },
+    "/api/company/{companyId}/invite": {
+      "post": {
+        "summary": "Create Invite",
+        "tags": ["Invite"],
+        "parameters": [
+          {
+            "name": "companyId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateInviteBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Invite created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Invite" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateUserBody": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": { "type": "string", "minLength": 2 },
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 }
+        }
+      },
+      "LoginBody": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "type": "string", "enum": ["OWNER", "ADMIN", "MEMBER"] }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" },
+          "user": { "$ref": "#/components/schemas/User" }
+        }
+      },
+      "CreateCompanyBody": {
+        "type": "object",
+        "required": ["name", "logo"],
+        "properties": {
+          "name": { "type": "string" },
+          "logo": { "type": "string" }
+        }
+      },
+      "Member": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "userId": { "type": "string", "format": "uuid" },
+          "role": { "type": "string", "enum": ["OWNER", "ADMIN", "MEMBER"] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "user": { "$ref": "#/components/schemas/User" }
+        }
+      },
+      "Company": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "logo": { "type": "string" },
+          "membersCount": { "type": "number" },
+          "members": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Member" }
+          }
+        }
+      },
+      "CompanyListResponse": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "number" },
+          "totalPages": { "type": "number" },
+          "companies": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Company" }
+          }
+        }
+      },
+      "CreateInviteBody": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": { "type": "string", "format": "email" }
+        }
+      },
+      "Invite": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email" },
+          "companyId": { "type": "string", "format": "uuid" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

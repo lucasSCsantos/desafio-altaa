@@ -5,13 +5,11 @@ import type React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-// import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
-import { ErrorResponse } from '@/types/api';
 import { LoginUserBodySchema } from '@/modules/user/user.schema';
 
 export default function LoginPage() {
@@ -28,7 +26,6 @@ export default function LoginPage() {
     const result = LoginUserBodySchema.safeParse({ email, password });
 
     if (!result.success) {
-      console.log(result.error.issues[0]);
       const message = result.error.issues[0].message;
 
       toast.error('Erro', {

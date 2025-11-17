@@ -101,7 +101,6 @@ export async function deleteCompany({ activeCompanyId, userId }: SessionPayload)
       id: activeCompanyId,
     },
   });
-
   if (!company) {
     throw new ApiError(404, 'COMPANY_NOT_FOUND', 'A empresa não existe ou foi removida');
   }

@@ -2,11 +2,16 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from './lib/auth';
 
 const publicRoutes = ['/login', '/signup'];
+const developmentRoutes = ['/docs'];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const publicRoute = publicRoutes.includes(pathname);
   const token = request.cookies.get('session')?.value || null;
+
+  if (developmentRoutes.includes(pathname) && process.env.NODE_ENV === 'development') {
+    return NextResponse.next();
+  }
 
   if (!token && publicRoute) {
     return NextResponse.next();

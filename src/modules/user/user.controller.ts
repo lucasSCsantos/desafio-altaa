@@ -41,7 +41,6 @@ export async function loginController(req: Request) {
     }
 
     const token = await loginUser(parsed.data);
-
     const res = NextResponse.json({ success: true });
 
     res.cookies.set('session', token, {

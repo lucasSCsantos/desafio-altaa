@@ -55,7 +55,6 @@ export async function loginUser({ email, password }: LoginUserParams) {
   if (!isPasswordValid) {
     throw new ApiError(400, 'INVALID_PASSWORD', 'Senha inválida');
   }
-
   const token = signJWT({
     userId: user.id,
   });
