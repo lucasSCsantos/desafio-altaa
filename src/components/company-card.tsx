@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users } from 'lucide-react';
 import { Company } from '@/types/api';
+import { useState } from 'react';
 
 interface CompanyCardProps {
   company: Company;
@@ -12,6 +13,8 @@ interface CompanyCardProps {
 }
 
 export function CompanyCard({ company, onSelect }: CompanyCardProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
     <Card className="p-6 hover:shadow-lg transition-shadow duration-200 flex flex-col">
       <div className="flex items-start justify-between mb-4">
@@ -30,10 +33,13 @@ export function CompanyCard({ company, onSelect }: CompanyCardProps) {
       </div>
 
       <Button
-        onClick={onSelect}
+        onClick={() => {
+          setIsLoading(true);
+          onSelect();
+        }}
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
       >
-        Selecionar
+        {isLoading ? 'Selecionando...' : 'Selecionar Empresa'}
       </Button>
     </Card>
   );
