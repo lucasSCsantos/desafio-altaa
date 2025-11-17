@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from '@/lib/auth';
 import { deleteMember, updateMemberRole } from './membership.service';
-import { DeleteMemberBodySchema, UpdateRoleBodySchema } from './membership.schema';
+import { DeleteMemberBodySchema, UpdateRoleBodySchema } from '@/schemas/membership.schema';
 import { cookies } from 'next/headers';
 import { createErrorResponse } from '@/lib/error-handler';
 

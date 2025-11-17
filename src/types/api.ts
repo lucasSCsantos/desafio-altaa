@@ -1,48 +1,52 @@
-import { CompanySchema, CreateCompanyBodySchema } from '@/modules/company/company.schema';
-import {
-  DeleteMemberBodySchema,
-  MemberSchema,
-  UpdateRoleBodySchema,
-} from '@/modules/membership/membership.schema';
-import { CreateUserBodySchema, LoginUserBodySchema, UserSchema } from '@/modules/user/user.schema';
-import {
-  CreateInviteBodySchema,
-  InviteSchema,
-  InviteMemberResponse,
-} from '@/modules/invite/invite.schema';
-import z from 'zod';
-
 export enum Role {
   OWNER = 'OWNER',
   ADMIN = 'ADMIN',
   MEMBER = 'MEMBER',
 }
 
-export interface ErrorResponse {
-  message: string;
-  error?: unknown;
-}
-
-export interface Member extends Omit<z.infer<typeof MemberSchema>, 'user'> {
-  user: User;
-}
-export interface Company extends Omit<z.infer<typeof CompanySchema>, 'memberships'> {
-  memberships: Member[];
-  membersCount: number;
-}
-export interface User extends z.infer<typeof UserSchema> {
+export interface User {
+  id: string;
+  name: string;
+  email: string;
   role: Role;
 }
-export type Invite = z.infer<typeof InviteSchema>;
-export type CompanyListResponse = {
+
+export interface Member {
+  id: string;
+  companyId: string;
+  userId: string;
+  role: Role;
+  user: User;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  logo: string;
+  membersCount: number;
+  memberships: Member[];
+}
+
+export interface Invite {
+  id: string;
+  email: string;
+  companyId: string;
+  role: Role;
+  token: string;
+  accepted: boolean;
+  expiresAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CompanyListResponse {
   total: number;
   totalPages: number;
   companies: Company[];
-};
-export type InviteMemberResponse = z.infer<typeof InviteMemberResponse>;
-export type CreateCompanyBody = z.infer<typeof CreateCompanyBodySchema>;
-export type ChangeRoleBody = z.infer<typeof UpdateRoleBodySchema>;
-export type DeleteMemberBody = z.infer<typeof DeleteMemberBodySchema>;
-export type CreateUserBody = z.infer<typeof CreateUserBodySchema>;
-export type LoginUserBody = z.infer<typeof LoginUserBodySchema>;
-export type CreateInviteBody = z.infer<typeof CreateInviteBodySchema>;
+}
+
+export interface InviteMemberResponse {
+  previewUrl: string;
+}

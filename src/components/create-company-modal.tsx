@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Company } from '@/types/api';
 import EmojiPicker from './emoji-picker';
-import { CreateCompanyBodySchema } from '@/modules/company/company.schema';
+import { CreateCompanyBodySchema } from '@/schemas/company.schema';
 
 interface CreateCompanyModalProps {
   isOpen: boolean;

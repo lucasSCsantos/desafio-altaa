@@ -1,6 +1,6 @@
-import { Role } from '@/types/api';
-import { UserSchema } from '../user/user.schema';
+import { UserSchema } from '@/schemas/user.schema';
 import { z } from '@/lib/zod';
+import { Role } from '@/generated/prisma/enums';
 
 export const UpdateRoleBodySchema = z.object({
   role: z.enum(Role),

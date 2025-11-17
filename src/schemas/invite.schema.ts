@@ -1,7 +1,7 @@
-import { Role } from '@/types/api';
-import { UserSchema } from '../user/user.schema';
-import { CompanySchema } from '../company/company.schema';
+import { UserSchema } from '@/schemas/user.schema';
+import { CompanySchema } from '@/schemas/company.schema';
 import { z } from '@/lib/zod';
+import { Role } from '@/generated/prisma/enums';
 
 export const InviteSchema = z.object({
   id: z.string(),

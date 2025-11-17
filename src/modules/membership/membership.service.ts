@@ -1,8 +1,8 @@
 import prisma from '@/lib/prisma';
 import { SessionPayload } from '@/lib/auth';
 import { ensureNotOwner, requireRole } from '@/lib/role-auth';
-import { Role } from '@/types/api';
 import { ApiError } from '@/lib/api-error';
+import { Role } from '@/generated/prisma/enums';
 
 interface UpdateMemberRoleParams {
   role: Role;

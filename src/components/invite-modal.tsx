@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Invite, Role } from '@/types/api';
 import { toast } from 'sonner';
-import { CreateInviteBodySchema } from '@/modules/invite/invite.schema';
+import { CreateInviteBodySchema } from '@/schemas/invite.schema';
 
 interface InviteModalProps {
   isOpen: boolean;
@@ -52,10 +52,9 @@ export function InviteModal({ isOpen, onClose, onInvite, loading }: InviteModalP
       return;
     }
 
-    // Agora você tem o payload TIPADO e SEGURO:
     const payload = result.data;
 
-    onInvite(payload);
+    onInvite({ ...payload, role: role as Role });
 
     setEmail('');
     setRole(Role.MEMBER);

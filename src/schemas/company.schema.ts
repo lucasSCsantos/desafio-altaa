@@ -1,5 +1,5 @@
 import { z } from '@/lib/zod';
-import { MemberSchema } from '../membership/membership.schema';
+import { MemberSchema } from '@/schemas/membership.schema';
 
 export const CompanySchema = z.object({
   id: z.uuid(),

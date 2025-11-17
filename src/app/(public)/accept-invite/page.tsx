@@ -3,15 +3,19 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 
-export default function AcceptInvitePage() {
-  const router = useRouter();
-  const params = useSearchParams();
+import { use } from 'react';
 
-  const token = params.get('token');
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export default function AcceptInvitePage(props: { searchParams: SearchParams }) {
+  const router = useRouter();
+  const searchParams = use(props.searchParams);
+
+  const { token } = searchParams;
 
   useEffect(() => {
     if (!token) {

@@ -1,7 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import { useEffect, useState } from 'react';
 import { DashboardHeader } from '@/components/dashboard-header';
 import { CompanyGrid } from '@/components/company-grid';
@@ -12,17 +10,21 @@ import { useSession } from '@/hooks/useSession';
 import CompanyPagination from '@/components/company-pagination';
 import { useCompanyActions } from '@/hooks/useCompanyActions';
 import { Company } from '@/types/api';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
-export default function DashboardPage() {
-  const searchParams = useSearchParams();
+import { use } from 'react';
+
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export default function DashboardPage(props: { searchParams: SearchParams }) {
+  const searchParams = use(props.searchParams);
   const router = useRouter();
   const user = useSession();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { createCompany, selectCompany, loading, getCompanies, companies, totalPages } =
     useCompanyActions();
 
-  const page = Number(searchParams.get('page') || 1);
+  const page = Number(searchParams.page || 1);
 
   useEffect(() => {
     getCompanies(page);

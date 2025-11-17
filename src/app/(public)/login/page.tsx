@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
-import { LoginUserBodySchema } from '@/modules/user/user.schema';
+import { LoginUserBodySchema } from '@/schemas/user.schema';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');

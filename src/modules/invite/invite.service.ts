@@ -5,8 +5,8 @@ import nodemailer from 'nodemailer';
 import { createMembership, findMembership } from '../membership/membership.repository';
 import { requireRole } from '@/lib/role-auth';
 import { findUserById } from '../user/user.repository';
-import { Role } from '@/types/api';
 import { ApiError } from '@/lib/api-error';
+import { Role } from '@/generated/prisma/enums';
 
 interface CreateInviteParams {
   email: string;

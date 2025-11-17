@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createUser, getUser, loginUser } from './user.service';
-import { CreateUserBodySchema, LoginUserBodySchema } from './user.schema';
+import { CreateUserBodySchema, LoginUserBodySchema } from '@/schemas/user.schema';
 import { cookies } from 'next/headers';
 import { verifyJWT } from '@/lib/auth';
 import { createErrorResponse } from '@/lib/error-handler';

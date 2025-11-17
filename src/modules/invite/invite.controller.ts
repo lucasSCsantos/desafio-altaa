@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from '@/lib/auth';
 import { acceptInvite, createInvite } from './invite.service';
-import { CreateInviteBodySchema } from './invite.schema';
+import { CreateInviteBodySchema } from '@/schemas/invite.schema';
 import { cookies } from 'next/headers';
 import { createErrorResponse } from '@/lib/error-handler';
 

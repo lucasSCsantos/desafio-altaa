@@ -7,7 +7,7 @@ import {
   listCompanies,
   selectCompany,
 } from './company.service';
-import { CreateCompanyBodySchema } from './company.schema';
+import { CreateCompanyBodySchema } from '@/schemas/company.schema';
 import { cookies } from 'next/headers';
 import { createErrorResponse } from '@/lib/error-handler';
 

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { CreateUserBodySchema } from '@/modules/user/user.schema';
+import { CreateUserBodySchema } from '@/schemas/user.schema';
 import { api } from '@/lib/api';
 
 export default function SignUpPage() {
