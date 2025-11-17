@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(uuid()) 
+  email             String   @unique
+  name              String
+  password          String
+  memberships       Membership[]
+  invites           Invite[]
+  activeCompanyId   String?
+  activeCompany     Company? @relation("ActiveCompany", fields: [activeCompanyId], references: [id])
+}
+
+model Company {
+  id          String  @id @default(uuid())
+  name        String
+  logo        String?
+  memberships Membership[]
+  invites     Invite[]
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt @default(now())
+
+  users User[] @relation("ActiveCompany")
+}
+
+model Membership {
+  id         String   @id @default(uuid())
+  userId     String
+  companyId  String
+  role       Role
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+}
+
+model Invite {
+  id          String   @id @default(uuid())
+  email       String
+  companyId   String
+  token       String   @unique
+  role        Role     @default(MEMBER)
+  expiresAt   DateTime
+  accepted    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt @default(now())
+
+  company   Company    @relation(fields: [companyId], references: [id])
+  user      User       @relation(fields: [email], references: [email])
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
