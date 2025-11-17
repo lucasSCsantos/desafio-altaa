@@ -41,7 +41,6 @@ jobs:
       # 🔥 Usa seu .env, mas substitui DATABASE_URL só no CI
       - name: Create env file
         run: |
-          cp .env.example .env || cp .env .env
           echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/app" >> .env
 
       - name: Prisma generate
