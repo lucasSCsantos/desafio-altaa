@@ -30,13 +30,6 @@ jobs:
       DATABASE_URL: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:5432/${{ secrets.DB_NAME }}?schema=public
       NODE_ENV: test
 
-      # Se quiser usar, coloque no repo secrets:
-      JWT_KEY: ${{ secrets.JWT_KEY }}
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      RESEND_EMAIL: ${{ secrets.RESEND_EMAIL }}
-      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-      FAKER_PASSWORD_HASH: ${{ secrets.FAKER_PASSWORD_HASH }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
