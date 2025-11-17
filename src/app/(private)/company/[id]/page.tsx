@@ -62,20 +62,24 @@ export default function CompanyPage() {
               </p>
             </div>
             <div className="gap-2 flex">
-              <Button
-                onClick={() => setIsInviteModalOpen(true)}
-                className="gap-2 bg-primary hover:bg-primary/90"
-              >
-                <Plus className="h-4 w-4" />
-                Convidar Usuário
-              </Button>
-              <Button
-                onClick={() => setIsDeleteModalOpen(true)}
-                className="gap-2 bg-red-500 hover:bg-red-600"
-              >
-                <Trash2 className="h-4 w-4" />
-                Apagar empresa
-              </Button>
+              {user?.role === 'MEMBER' ? null : (
+                <Button
+                  onClick={() => setIsInviteModalOpen(true)}
+                  className="gap-2 bg-primary hover:bg-primary/90"
+                >
+                  <Plus className="h-4 w-4" />
+                  Convidar Usuário
+                </Button>
+              )}
+              {user?.role !== 'OWNER' ? null : (
+                <Button
+                  onClick={() => setIsDeleteModalOpen(true)}
+                  className="gap-2 bg-red-500 hover:bg-red-600"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Apagar empresa
+                </Button>
+              )}
             </div>
           </div>
 

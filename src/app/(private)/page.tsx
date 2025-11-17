@@ -64,7 +64,6 @@ export default function DashboardPage(props: { searchParams: SearchParams }) {
         />
 
         {/* Company Pagination */}
-
         <div className="flex items-center justify-between mt-8">
           <CompanyPagination
             currentPage={page}
