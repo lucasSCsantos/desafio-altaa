@@ -6,6 +6,8 @@ describe('Company creation', () => {
   it('should create a new company', () => {
     cy.visit('/');
 
+    cy.wait(3000);
+
     cy.get('button').contains('Criar Empresa').click();
 
     cy.get('input[id="company-name"]').type('Empresa Teste');
@@ -18,6 +20,8 @@ describe('Company creation', () => {
 
   it('should not create a new company with invalid data', () => {
     cy.visit('/');
+
+    cy.wait(3000);
 
     cy.get('button').contains('Criar Empresa').click();
 
