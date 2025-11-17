@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, development]
+    branches: [development, main]
   pull_request:
-    branches: [main, development]
+    branches: [development, main]
 
 jobs:
   ci:
@@ -13,68 +13,61 @@ jobs:
     services:
       postgres:
         image: postgres:16-alpine
-        ports:
-          - 5432:5432
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: app
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+        ports:
+          # expõe a porta padrão 5432 para prisma, ignorando o DB_PORT do .env
+          - "5432:5432"
         options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=5s
+          --health-cmd="pg_isready -U ${{ secrets.DB_USER }}"
+          --health-interval=10s
           --health-timeout=5s
           --health-retries=5
 
+    env:
+      DATABASE_URL: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:5432/${{ secrets.DB_NAME }}?schema=public
+      NODE_ENV: test
+
+      # Se quiser usar, coloque no repo secrets:
+      JWT_KEY: ${{ secrets.JWT_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_EMAIL: ${{ secrets.RESEND_EMAIL }}
+      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+      FAKER_PASSWORD_HASH: ${{ secrets.FAKER_PASSWORD_HASH }}
+
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      # 🔥 Usa seu .env, mas substitui DATABASE_URL só no CI
-      - name: Create env file
-        run: |
-          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/desafio_altaa" >> .env
-
-      - name: Prisma generate
+      - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Run migrations
+      - name: Run Migrations
         run: npx prisma migrate deploy
 
-      # 🔥 SEED AUTOMÁTICO
-      - name: Run Prisma seed
+      - name: Run Seed
         run: npx prisma db seed
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/desafio_altaa
 
-      # Lint
-      - name: Run lint
-        run: npm run lint --if-present
+      - name: Lint
+        run: npm run lint
 
-      # Build
-      - name: Build project
-        run: npm run build
+      - name: Run Unit Tests
+        run: npm run test
 
-      # Testes unitários / integração
-      - name: Run unit tests
-        run: npm test --if-present
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
-
-      # --- Cypress (opcional) ---
-      - name: Install Cypress
-        run: npx cypress install
-      
-      - name: Start Next.js server
-        run: npm run start &
-      
-      - name: Run E2E tests
-        run: npx cypress run
+      - name: Cypress Run
+        uses: cypress-io/github-action@v6
+        with:
+          build: npm run build
+          start: npm run start
+          wait-on: "http://localhost:3000"
